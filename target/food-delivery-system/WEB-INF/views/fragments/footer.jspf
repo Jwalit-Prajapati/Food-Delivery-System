@@ -1,0 +1,8 @@
+</main>
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; <%= java.time.Year.now() %> FoodHub. Built with Spring MVC + JSP.</p>
+    </div>
+</footer>
+</body>
+</html>
