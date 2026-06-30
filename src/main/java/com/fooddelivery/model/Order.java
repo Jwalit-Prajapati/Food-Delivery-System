@@ -67,7 +67,8 @@ public class Order {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "order_date")
+    @CreationTimestamp
+    @Column(name = "order_date", updatable = false)
     private LocalDateTime orderDate;
 
     @Column(name = "picked_up_at")
@@ -76,9 +77,13 @@ public class Order {
     @Column(name = "delivery_date")
     private LocalDateTime deliveryDate;
 
-    @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
+    /**
+     * Order items — NOT a JPA relationship.
+     * OrderItem uses a plain {@code Long orderId} FK (no @ManyToOne), so we
+     * populate this list manually via {@link com.fooddelivery.dao.OrderItemRepository}.
+     */
+    @Transient
     private List<OrderItem> items = new ArrayList<>();
 
 }
+

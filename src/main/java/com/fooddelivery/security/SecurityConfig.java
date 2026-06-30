@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import jakarta.servlet.DispatcherType;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -36,12 +37,47 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Allow both STATELESS (JWT/API) and ALWAYS (Web UI/session) — use IF_REQUIRED
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
+                // Allow container forwards (JSP rendering) and error dispatches
                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                .requestMatchers("/", "/login", "/register", "/resources/**", "/error").permitAll()
-                .requestMatchers("/api/users/login", "/api/users/register", "/actuator/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
+
+                // ── Public API endpoints ──────────────────────────────────────
+                .requestMatchers(
+                    "/api/users/login",
+                    "/api/users/register",
+                    "/actuator/health",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
+
+                // ── Public Web UI pages ───────────────────────────────────────
+                // Auth
+                .requestMatchers("/", "/login", "/register", "/logout").permitAll()
+                // Static resources
+                .requestMatchers("/resources/**", "/static/**", "/webjars/**", "/error").permitAll()
+                // CSS/JS/images under webapp
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+
+                // ── Web UI pages (controller guards access internally via session) ──
+                .requestMatchers(
+                    "/home", "/home/**",
+                    "/restaurants", "/restaurants/**",
+                    "/cart", "/cart/**",
+                    "/orders", "/orders/**",
+                    "/profile", "/profile/**",
+                    "/reviews/**",
+                    "/owner/**",
+                    "/admin/**",
+                    "/delivery/**"
+                ).permitAll()
+
+                // ── All API endpoints require JWT authentication ──────────────
+                .requestMatchers("/api/**").authenticated()
+
+                // Anything else — permit (controllers handle auth)
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

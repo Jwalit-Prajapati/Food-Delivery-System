@@ -12,15 +12,12 @@ import com.fooddelivery.service.RestaurantService;
 import com.fooddelivery.service.ReviewService;
 import com.fooddelivery.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
-import com.fooddelivery.model.Pricing;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +42,6 @@ public class CustomerPageController {
                        @RequestParam(required = false) String cuisine,
                        HttpSession session,
                        Model model) {
-        User user = requireLogin(session);
-        if (user == null) return "redirect:/login";
 
         List<Restaurant> restaurants;
         if (search != null && !search.isBlank()) {
@@ -70,8 +65,6 @@ public class CustomerPageController {
                                    @RequestParam(required = false) String diet,
                                    @RequestParam(required = false) String category,
                                    HttpSession session, Model model) {
-        User user = requireLogin(session);
-        if (user == null) return "redirect:/login";
 
         Restaurant restaurant = restaurantService.getById(id);
         List<FoodItem> items = foodItemService.getAvailableByRestaurant(id);
@@ -129,6 +122,20 @@ public class CustomerPageController {
         BigDecimal tax = pricing.getTax();
         BigDecimal total = pricing.getTotal();
 
+        // Enrich CartItems with food-item display data for the JSP template.
+        // CartItem only stores FKs; we hydrate names and prices here in the view layer.
+        List<CartItemView> cartItemViews = cart.getItems().stream()
+                .map(ci -> {
+                    try {
+                        com.fooddelivery.model.FoodItem food = foodItemService.getById(ci.getFoodItemId());
+                        return new CartItemView(ci, food.getName(), food.getPrice(), food.isVeg(), food.getImageUrl());
+                    } catch (com.fooddelivery.exception.ResourceNotFoundException e) {
+                        // Food item may have been deleted — show placeholder
+                        return new CartItemView(ci, "(unavailable)", java.math.BigDecimal.ZERO, true, null);
+                    }
+                })
+                .collect(java.util.stream.Collectors.toList());
+
         Restaurant restaurant = null;
         if (cart.getRestaurantId() != null) {
             try { restaurant = restaurantService.getById(cart.getRestaurantId()); }
@@ -136,6 +143,7 @@ public class CustomerPageController {
         }
 
         model.addAttribute("cart", cart);
+        model.addAttribute("cartItems", cartItemViews);
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("addresses", addresses);
         model.addAttribute("subtotal", subtotal);
@@ -244,7 +252,20 @@ public class CustomerPageController {
         try { address = addressService.getById(order.getAddressId()); }
         catch (ResourceNotFoundException ignored) {}
 
+        // Enrich order items with food-item name for display.
+        // OrderItem stores only the FK (foodItemId); JSP needs the name.
+        List<OrderItemView> orderItemViews = order.getItems().stream()
+                .map(oi -> {
+                    String name = "(item removed)";
+                    try {
+                        name = foodItemService.getById(oi.getFoodItemId()).getName();
+                    } catch (ResourceNotFoundException ignored2) {}
+                    return new OrderItemView(oi, name);
+                })
+                .collect(java.util.stream.Collectors.toList());
+
         model.addAttribute("order", order);
+        model.addAttribute("orderItems", orderItemViews);
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("address", address);
         addCommon(session, model);

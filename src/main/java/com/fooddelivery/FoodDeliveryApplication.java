@@ -2,11 +2,9 @@ package com.fooddelivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Entry point for the Food Delivery System — Spring Boot 3 / Jakarta EE 10.
@@ -22,10 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * <p>{@link EnableTransactionManagement} is kept explicit here so the intent is
  * obvious to future maintainers, even though Boot's auto-config would enable it
  * anyway when a {@code DataSource} is present.
+ *
+ * <p>NOTE: {@code PasswordEncoder} bean is defined in {@link com.fooddelivery.security.SecurityConfig}
+ * to keep all security configuration co-located. Do NOT define it here as well.
  */
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-
 @SpringBootApplication
 @EnableTransactionManagement
 public class FoodDeliveryApplication extends SpringBootServletInitializer {

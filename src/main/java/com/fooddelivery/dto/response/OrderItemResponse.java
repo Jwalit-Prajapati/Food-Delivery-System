@@ -15,5 +15,6 @@ public class OrderItemResponse {
     private Long foodItemId;
     private int quantity;
     private BigDecimal price;
+    private BigDecimal subtotal;
     private String foodItemName;
 }

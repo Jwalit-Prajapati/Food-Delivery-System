@@ -1,10 +1,6 @@
 package com.fooddelivery.service;
 
-import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.model.FoodItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface FoodItemService {

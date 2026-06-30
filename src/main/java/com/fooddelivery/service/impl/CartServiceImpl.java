@@ -9,7 +9,6 @@ import com.fooddelivery.model.Cart;
 import com.fooddelivery.model.CartItem;
 import com.fooddelivery.model.FoodItem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

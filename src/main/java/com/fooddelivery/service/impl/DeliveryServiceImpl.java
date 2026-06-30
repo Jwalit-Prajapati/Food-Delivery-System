@@ -7,7 +7,6 @@ import com.fooddelivery.model.Order;
 import com.fooddelivery.service.DeliveryService;
 import com.fooddelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +47,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (updated == 0) {
             throw new BusinessException("Order is no longer available for pickup");
         }
+        // Transition status: READY_FOR_PICKUP -> OUT_FOR_DELIVERY
+        orderRepository.updateStatus(orderId, Order.Status.OUT_FOR_DELIVERY);
         return orderService.getById(orderId);
     }
 

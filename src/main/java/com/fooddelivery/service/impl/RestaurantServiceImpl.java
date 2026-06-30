@@ -1,15 +1,11 @@
 package com.fooddelivery.service.impl;
 
-import com.fooddelivery.service.*;
-
 import com.fooddelivery.service.RestaurantService;
-
 import com.fooddelivery.dao.RestaurantRepository;
 import com.fooddelivery.dao.ReviewRepository;
 import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.model.Restaurant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -27,8 +27,15 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
+    /** Unit price of the food item at time of order. */
     @Column(nullable = false)
     private BigDecimal price;
 
+    /**
+     * Line-item subtotal = price × quantity.
+     * Stored in DB for reporting; always recomputed on save.
+     */
+    @Column(nullable = false)
+    private BigDecimal subtotal;
 
 }

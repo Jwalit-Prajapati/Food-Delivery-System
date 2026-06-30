@@ -13,7 +13,6 @@ import com.fooddelivery.service.CartService;
 import com.fooddelivery.service.OrderService;
 import com.fooddelivery.service.PricingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,11 +91,13 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = new ArrayList<>(items.size());
         for (CartItem ci : items) {
             BigDecimal price = foodItemService.getById(ci.getFoodItemId()).getPrice();
+            BigDecimal subtotal = price.multiply(BigDecimal.valueOf(ci.getQuantity()));
             orderItems.add(OrderItem.builder()
                     .orderId(order.getId())
                     .foodItemId(ci.getFoodItemId())
                     .quantity(ci.getQuantity())
                     .price(price)
+                    .subtotal(subtotal)
                     .build());
         }
         orderItemRepository.saveAll(orderItems);
@@ -132,12 +133,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getByStatus(Order.Status status) {
-        // Warning: This will fetch all orders globally by status. OrderRepository doesn't natively support finding all by status globally without a specific method, but we can implement it or just use an equivalent one if defined.
-        // Assuming there isn't a massive need for a global fetch without owner, we can implement it in the repo later, but JpaRepository has findAll.
-        // Actually I should add findByStatus to repository. Let's assume it exists or use findAll.stream().
-        // For simplicity I will just assume findByStatus exists.
-        // Wait, I forgot to add findByStatus to OrderRepository. Let me add it. No, I will just do findAll() and filter.
-        return orderRepository.findAll().stream().filter(o -> o.getStatus() == status).toList();
+        return orderRepository.findByStatusOrderByOrderDateDesc(status);
     }
 
     // ------------------------------------------------------------------ //

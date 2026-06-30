@@ -6,14 +6,14 @@
 
 <h1>Your cart</h1>
 
-<c:if test="${empty cart.items}">
+<c:if test="${empty cartItems}">
     <div class="empty">
         <p>Your cart is empty.</p>
         <a class="btn-primary" href="${pageContext.request.contextPath}/home">Browse restaurants</a>
     </div>
 </c:if>
 
-<c:if test="${not empty cart.items}">
+<c:if test="${not empty cartItems}">
     <div class="layout-two-col">
         <div>
             <c:if test="${not empty restaurant}">
@@ -24,7 +24,7 @@
             </c:if>
 
             <div class="cart-list">
-                <c:forEach var="ci" items="${cart.items}">
+                <c:forEach var="ci" items="${cartItems}">
                     <div class="cart-item">
                         <div>
                             <h4>${ci.foodItemName}</h4>
@@ -37,7 +37,7 @@
                             <button type="submit" name="quantity" value="${ci.quantity + 1}" class="qty-btn">+</button>
                         </form>
                         <div class="cart-item-total">
-                            ₹<fmt:formatNumber value="${ci.price * ci.quantity}" minFractionDigits="2" maxFractionDigits="2"/>
+                            ₹<fmt:formatNumber value="${ci.lineTotal}" minFractionDigits="2" maxFractionDigits="2"/>
                         </div>
                         <form method="post" action="${pageContext.request.contextPath}/cart/remove">
                             <input type="hidden" name="itemId" value="${ci.id}">

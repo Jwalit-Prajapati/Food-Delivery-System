@@ -90,7 +90,7 @@ spring:
 app:
   # ── JWT — inject into your JwtService with @Value("${app.jwt.secret}") ───
   jwt:
-    secret: ${JWT_SECRET:REPLACE_ME_WITH_A_256BIT_BASE64_ENCODED_SECRET_KEY_IN_PRODUCTION}
+    secret: dGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGZvb2QgZGVsaXZlcnkgc3lzdGVt
     expiration-ms: 3600000                 # 1 hour  (3_600_000 ms)
     refresh-expiration-ms: 86400000        # 24 hours — for refresh-token flow
 

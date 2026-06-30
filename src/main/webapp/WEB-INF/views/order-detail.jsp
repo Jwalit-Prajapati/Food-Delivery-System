@@ -27,7 +27,7 @@
                 <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
                 </thead>
                 <tbody>
-                <c:forEach var="it" items="${order.items}">
+                <c:forEach var="it" items="${orderItems}">
                     <tr>
                         <td>${it.foodItemName}</td>
                         <td>${it.quantity}</td>

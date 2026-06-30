@@ -99,7 +99,7 @@
             </div>
         </c:forEach>
 
-        <c:if test="${not empty currentUser and currentUser.role == 'CUSTOMER'}">
+        <c:if test="${not empty currentUser and currentUser.role.name() == 'CUSTOMER'}">
             <details class="review-form">
                 <summary>Leave a review</summary>
                 <form method="post" action="${pageContext.request.contextPath}/reviews/add" class="form">
