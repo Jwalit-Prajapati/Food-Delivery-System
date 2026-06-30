@@ -60,6 +60,11 @@ public class CustomerPageController {
 
     /* ---------- Restaurant detail / menu ---------- */
 
+    @GetMapping("/restaurants")
+    public String restaurantsList() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/restaurants/{id}")
     public String restaurantDetail(@PathVariable Long id,
                                    @RequestParam(required = false) String diet,
