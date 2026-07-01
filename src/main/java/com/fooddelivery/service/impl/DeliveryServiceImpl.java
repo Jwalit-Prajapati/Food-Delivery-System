@@ -22,22 +22,30 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public List<Order> getDeliveryQueue() {
-        return orderRepository.findByStatusOrderByOrderDateDesc(Order.Status.READY_FOR_PICKUP);
+        List<Order> orders = orderRepository.findByStatusOrderByOrderDateDesc(Order.Status.READY_FOR_PICKUP);
+        orders.forEach(o -> o.setItems(orderService.getById(o.getId()).getItems()));
+        return orders;
     }
 
     @Override
     public List<Order> getDeliveriesByPartner(Long partnerId) {
-        return orderRepository.findByDeliveryPartnerIdOrderByOrderDateDesc(partnerId);
+        List<Order> orders = orderRepository.findByDeliveryPartnerIdOrderByOrderDateDesc(partnerId);
+        orders.forEach(o -> o.setItems(orderService.getById(o.getId()).getItems()));
+        return orders;
     }
 
     @Override
     public List<Order> getActiveDeliveriesByPartner(Long partnerId) {
-        return orderRepository.findByDeliveryPartnerIdAndStatusOrderByOrderDateDesc(partnerId, Order.Status.OUT_FOR_DELIVERY);
+        List<Order> orders = orderRepository.findByDeliveryPartnerIdAndStatusOrderByOrderDateDesc(partnerId, Order.Status.OUT_FOR_DELIVERY);
+        orders.forEach(o -> o.setItems(orderService.getById(o.getId()).getItems()));
+        return orders;
     }
 
     @Override
     public List<Order> getCompletedDeliveriesByPartner(Long partnerId) {
-        return orderRepository.findByDeliveryPartnerIdAndStatusOrderByOrderDateDesc(partnerId, Order.Status.DELIVERED);
+        List<Order> orders = orderRepository.findByDeliveryPartnerIdAndStatusOrderByOrderDateDesc(partnerId, Order.Status.DELIVERED);
+        orders.forEach(o -> o.setItems(orderService.getById(o.getId()).getItems()));
+        return orders;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class Cart {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "cartId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<CartItem> items = new ArrayList<>();

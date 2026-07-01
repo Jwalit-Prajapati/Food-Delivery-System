@@ -105,7 +105,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     @Transactional
     public void refreshRating(Long restaurantId) {
-        BigDecimal avg = reviewRepository.getAverageRating(restaurantId);
-        restaurantRepository.updateRating(restaurantId, avg);
+        Double avg = reviewRepository.getAverageRating(restaurantId);
+        restaurantRepository.updateRating(restaurantId, BigDecimal.valueOf(avg));
     }
 }

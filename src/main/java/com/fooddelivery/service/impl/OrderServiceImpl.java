@@ -123,17 +123,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getByUser(Long userId) {
-        return orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+        orders.forEach(o -> o.setItems(orderItemRepository.findByOrderId(o.getId())));
+        return orders;
     }
 
     @Override
     public List<Order> getByRestaurant(Long restaurantId) {
-        return orderRepository.findByRestaurantIdOrderByOrderDateDesc(restaurantId);
+        List<Order> orders = orderRepository.findByRestaurantIdOrderByOrderDateDesc(restaurantId);
+        orders.forEach(o -> o.setItems(orderItemRepository.findByOrderId(o.getId())));
+        return orders;
     }
 
     @Override
     public List<Order> getByStatus(Order.Status status) {
-        return orderRepository.findByStatusOrderByOrderDateDesc(status);
+        List<Order> orders = orderRepository.findByStatusOrderByOrderDateDesc(status);
+        orders.forEach(o -> o.setItems(orderItemRepository.findByOrderId(o.getId())));
+        return orders;
     }
 
     // ------------------------------------------------------------------ //
