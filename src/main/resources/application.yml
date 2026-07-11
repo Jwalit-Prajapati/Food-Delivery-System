@@ -82,7 +82,7 @@ spring:
   security:
     user:
       name: admin                          # only active if no custom UserDetailsService is wired
-      password: ${SECURITY_DEFAULT_PASSWORD:changeme}
+      password: ${SECURITY_DEFAULT_PASSWORD:password}
 
 # -----------------------------------------------------------------------------
 # CUSTOM APP PROPERTIES

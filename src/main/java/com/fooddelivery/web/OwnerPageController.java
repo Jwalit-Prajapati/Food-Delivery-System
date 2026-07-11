@@ -4,7 +4,7 @@ import com.fooddelivery.exception.BusinessException;
 import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.model.*;
 import com.fooddelivery.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/owner")
 public class OwnerPageController {
 
-    @Autowired private RestaurantService restaurantService;
-    @Autowired private FoodItemService foodItemService;
-    @Autowired private OrderService orderService;
-    @Autowired private AddressService addressService;
+    private final RestaurantService restaurantService;
+    private final FoodItemService foodItemService;
+    private final OrderService orderService;
+    private final AddressService addressService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {

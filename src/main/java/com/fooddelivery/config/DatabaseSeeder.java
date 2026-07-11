@@ -1,7 +1,7 @@
 package com.fooddelivery.config;
 
 import com.fooddelivery.model.User;
-import com.fooddelivery.dao.UserRepository;
+import com.fooddelivery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,9 +1,9 @@
 package com.fooddelivery.service.impl;
 
 import com.fooddelivery.service.AnalyticsService;
-import com.fooddelivery.dao.OrderRepository;
-import com.fooddelivery.dao.RestaurantRepository;
-import com.fooddelivery.dao.UserRepository;
+import com.fooddelivery.repository.OrderRepository;
+import com.fooddelivery.repository.RestaurantRepository;
+import com.fooddelivery.repository.UserRepository;
 import com.fooddelivery.model.Order;
 import com.fooddelivery.model.User;
 import lombok.RequiredArgsConstructor;

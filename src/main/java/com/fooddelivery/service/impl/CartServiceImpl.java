@@ -2,8 +2,8 @@ package com.fooddelivery.service.impl;
 
 import com.fooddelivery.service.CartService;
 import com.fooddelivery.service.FoodItemService;
-import com.fooddelivery.dao.CartItemRepository;
-import com.fooddelivery.dao.CartRepository;
+import com.fooddelivery.repository.CartItemRepository;
+import com.fooddelivery.repository.CartRepository;
 import com.fooddelivery.exception.BusinessException;
 import com.fooddelivery.model.Cart;
 import com.fooddelivery.model.CartItem;

@@ -2,7 +2,7 @@ package com.fooddelivery.service.impl;
 
 import com.fooddelivery.service.RestaurantService;
 import com.fooddelivery.service.ReviewService;
-import com.fooddelivery.dao.ReviewRepository;
+import com.fooddelivery.repository.ReviewRepository;
 import com.fooddelivery.exception.BusinessException;
 import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.model.Review;

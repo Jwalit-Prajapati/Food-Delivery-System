@@ -80,7 +80,7 @@ public class Order {
     /**
      * Order items — NOT a JPA relationship.
      * OrderItem uses a plain {@code Long orderId} FK (no @ManyToOne), so we
-     * populate this list manually via {@link com.fooddelivery.dao.OrderItemRepository}.
+     * populate this list manually via {@link com.fooddelivery.repository.OrderItemRepository}.
      */
     @Transient
     private List<OrderItem> items = new ArrayList<>();

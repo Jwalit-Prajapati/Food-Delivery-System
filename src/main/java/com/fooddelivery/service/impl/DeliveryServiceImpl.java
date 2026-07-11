@@ -1,8 +1,7 @@
 package com.fooddelivery.service.impl;
 
-import com.fooddelivery.dao.OrderRepository;
+import com.fooddelivery.repository.OrderRepository;
 import com.fooddelivery.exception.BusinessException;
-import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.model.Order;
 import com.fooddelivery.service.DeliveryService;
 import com.fooddelivery.service.OrderService;

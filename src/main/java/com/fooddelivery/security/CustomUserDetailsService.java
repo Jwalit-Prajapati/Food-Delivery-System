@@ -1,6 +1,6 @@
 package com.fooddelivery.security;
 
-import com.fooddelivery.dao.UserRepository;
+import com.fooddelivery.repository.UserRepository;
 import com.fooddelivery.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

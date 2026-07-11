@@ -1,4 +1,4 @@
-package com.fooddelivery.dao;
+package com.fooddelivery.repository;
 
 import com.fooddelivery.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
