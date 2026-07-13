@@ -1,30 +1,30 @@
 package com.fooddelivery.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Spring MVC customisation:
- * – Registers the {@link NoCacheInterceptor} for all dynamic HTML pages so that
- *   browsers always see fresh data after a POST+redirect.
- * – Excludes static resources from the no-cache policy.
+ * Spring MVC configuration.
+ *
+ * <p>Registers the webapp's {@code /resources/} directory as a static-resource
+ * location so that CSS, JS and image files served by JSP pages (e.g.
+ * {@code ${pageContext.request.contextPath}/resources/css/styles.css}) are
+ * accessible via the Spring MVC resource handler.
+ *
+ * <p>Without this registration, Spring Boot's auto-configured resource handler
+ * only serves files from {@code classpath:/static/}, {@code classpath:/public/},
+ * {@code classpath:/resources/}, and {@code classpath:/META-INF/resources/} —
+ * it does NOT serve files that live under {@code src/main/webapp/resources/}.
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new NoCacheInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                    "/resources/**",
-                    "/static/**",
-                    "/webjars/**",
-                    "/css/**",
-                    "/js/**",
-                    "/images/**",
-                    "/favicon.ico"
-                );
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Serve /resources/** from src/main/webapp/resources/
+        // This exposes styles.css (and any future JS/images) to JSP pages.
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
     }
 }

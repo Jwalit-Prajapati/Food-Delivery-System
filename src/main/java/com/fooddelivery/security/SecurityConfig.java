@@ -54,7 +54,8 @@ public class SecurityConfig {
 
                 // ── Public Web UI pages ───────────────────────────────────────
                 // Auth
-                .requestMatchers("/", "/login", "/register", "/logout").permitAll()
+                .requestMatchers("/", "/login", "/register", "/logout",
+                                 "/food-delivery-system", "/food-delivery-system/**").permitAll()
                 // Static resources
                 .requestMatchers("/resources/**", "/static/**", "/webjars/**", "/error").permitAll()
                 // CSS/JS/images under webapp

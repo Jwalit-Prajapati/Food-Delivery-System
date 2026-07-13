@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -18,6 +19,24 @@ public class AuthPageController {
 
     private final UserService userService;
 
+    /**
+     * Redirect /food-delivery-system/* → /*
+     *
+     * When running with embedded Tomcat (context-path = "/"), users sometimes
+     * include the WAR artifact name in the URL
+     * (e.g. http://localhost:8080/food-delivery-system/login).
+     * This catch-all strips the prefix and redirects to the correct path.
+     */
+    @GetMapping("/food-delivery-system/{path:^(?!resources).*$}")
+    public String redirectArtifactPrefix(@PathVariable String path) {
+        return "redirect:/" + path;
+    }
+
+    @GetMapping("/food-delivery-system")
+    public String redirectArtifactRoot() {
+        return "redirect:/";
+    }
+
     @GetMapping("/")
     public String root(HttpSession session) {
         return SessionUtil.isLoggedIn(session) ? "redirect:/home" : "redirect:/login";
@@ -28,6 +47,7 @@ public class AuthPageController {
         if (SessionUtil.isLoggedIn(session)) {
             return "redirect:/home";
         }
+        addCommon(session, model);
         return "login";
     }
 
@@ -44,6 +64,7 @@ public class AuthPageController {
         } catch (BusinessException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("email", email);
+            addCommon(session, model);
             return "login";
         }
     }
@@ -56,10 +77,11 @@ public class AuthPageController {
     }
 
     @GetMapping("/register")
-    public String registerPage(HttpSession session) {
+    public String registerPage(HttpSession session, Model model) {
         if (SessionUtil.isLoggedIn(session)) {
             return "redirect:/home";
         }
+        addCommon(session, model);
         return "register";
     }
 
@@ -89,6 +111,7 @@ public class AuthPageController {
             model.addAttribute("email", email);
             model.addAttribute("phone", phone);
             model.addAttribute("role", role);
+            addCommon(session, model);
             return "register";
         }
     }
@@ -97,5 +120,25 @@ public class AuthPageController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    /**
+     * Populates model attributes required by header.jspf:
+     * currentUser, flash, and flashError.
+     * Must be called before returning any view name to avoid JSTL EL errors
+     * caused by missing session attributes in the JSP template.
+     */
+    private void addCommon(HttpSession session, Model model) {
+        model.addAttribute("currentUser", SessionUtil.getCurrentUser(session));
+        Object flash = session.getAttribute(SessionUtil.FLASH);
+        Object flashError = session.getAttribute(SessionUtil.FLASH_ERROR);
+        if (flash != null) {
+            model.addAttribute("flash", flash);
+            session.removeAttribute(SessionUtil.FLASH);
+        }
+        if (flashError != null) {
+            model.addAttribute("flashError", flashError);
+            session.removeAttribute(SessionUtil.FLASH_ERROR);
+        }
     }
 }
