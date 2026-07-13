@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.request;
 
+import java.io.Serializable;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReviewRequest {
+public class ReviewRequest implements Serializable {
     
     @NotNull(message = "User ID is required")
     private Long userId;

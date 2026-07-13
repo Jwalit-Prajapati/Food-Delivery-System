@@ -13,6 +13,10 @@ import com.fooddelivery.service.CartService;
 import com.fooddelivery.service.OrderService;
 import com.fooddelivery.service.PricingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +54,13 @@ public class OrderServiceImpl implements OrderService {
      *
      * <p>Pricing (subtotal, tax, delivery fee, total) is computed by
      * {@link PricingService} to keep this class free of financial rules.</p>
+     *
+     * <p>After placing, the user's order-list cache is evicted so the new
+     * order appears on their next order-history load.</p>
      */
     @Override
     @Transactional
+    @CacheEvict(value = "orders", key = "'user:' + #userId")
     public Order placeOrder(Long userId, Long addressId, String paymentMethod) {
         Cart cart = cartService.getOrCreateCart(userId);
         List<CartItem> items = cartService.getItemsByCartId(cart.getId());
@@ -113,7 +121,12 @@ public class OrderServiceImpl implements OrderService {
     //  Queries                                                             //
     // ------------------------------------------------------------------ //
 
+    /**
+     * Cached by order ID. Order detail pages and delivery-partner screens
+     * request the same order object repeatedly across short time windows.
+     */
     @Override
+    @Cacheable(value = "orders", key = "#id")
     public Order getById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
@@ -121,20 +134,35 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    /**
+     * Cached per user. The order-history screen is loaded on every visit to
+     * the "My Orders" page; caching avoids repeated full scans by userId.
+     */
     @Override
+    @Cacheable(value = "orders", key = "'user:' + #userId")
     public List<Order> getByUser(Long userId) {
         List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(userId);
         orders.forEach(o -> o.setItems(orderItemRepository.findByOrderId(o.getId())));
         return orders;
     }
 
+    /**
+     * Cached per restaurant. Restaurant dashboards repeatedly load their
+     * incoming order list; caching reduces DB load on busy restaurants.
+     */
     @Override
+    @Cacheable(value = "orders", key = "'restaurant:' + #restaurantId")
     public List<Order> getByRestaurant(Long restaurantId) {
         List<Order> orders = orderRepository.findByRestaurantIdOrderByOrderDateDesc(restaurantId);
         orders.forEach(o -> o.setItems(orderItemRepository.findByOrderId(o.getId())));
         return orders;
     }
 
+    /**
+     * NOT cached — status-filtered lists change with every order state
+     * transition. Caching them would require eviction after every update,
+     * negating the benefit and risking stale admin views.
+     */
     @Override
     public List<Order> getByStatus(Order.Status status) {
         List<Order> orders = orderRepository.findByStatusOrderByOrderDateDesc(status);
@@ -146,8 +174,22 @@ public class OrderServiceImpl implements OrderService {
     //  Restaurant-side status transitions                                  //
     // ------------------------------------------------------------------ //
 
+    /**
+     * Status change: @CachePut on the per-ID entry keeps it fresh.
+     * List caches for the owning user and restaurant are evicted so their
+     * next load reflects the new status.
+     */
     @Override
     @Transactional
+    @Caching(
+        put = {
+            @CachePut(value = "orders", key = "#orderId")
+        },
+        evict = {
+            @CacheEvict(value = "orders", key = "'user:' + #result.userId"),
+            @CacheEvict(value = "orders", key = "'restaurant:' + #result.restaurantId")
+        }
+    )
     public Order updateStatus(Long orderId, Order.Status newStatus) {
         Order order = getById(orderId);
         if (order.getStatus() == Order.Status.DELIVERED
@@ -175,6 +217,15 @@ public class OrderServiceImpl implements OrderService {
     /** Restaurant accepts an order: {@code PLACED → CONFIRMED}. */
     @Override
     @Transactional
+    @Caching(
+        put = {
+            @CachePut(value = "orders", key = "#orderId")
+        },
+        evict = {
+            @CacheEvict(value = "orders", key = "'user:' + #result.userId"),
+            @CacheEvict(value = "orders", key = "'restaurant:' + #result.restaurantId")
+        }
+    )
     public Order acceptOrder(Long orderId) {
         Order order = getById(orderId);
         if (order.getStatus() != Order.Status.PLACED) {
@@ -189,6 +240,15 @@ public class OrderServiceImpl implements OrderService {
     /** Restaurant rejects an order: {@code PLACED|CONFIRMED → REJECTED}. */
     @Override
     @Transactional
+    @Caching(
+        put = {
+            @CachePut(value = "orders", key = "#orderId")
+        },
+        evict = {
+            @CacheEvict(value = "orders", key = "'user:' + #result.userId"),
+            @CacheEvict(value = "orders", key = "'restaurant:' + #result.restaurantId")
+        }
+    )
     public Order rejectOrder(Long orderId) {
         Order order = getById(orderId);
         if (order.getStatus() != Order.Status.PLACED
@@ -203,6 +263,15 @@ public class OrderServiceImpl implements OrderService {
     /** Restaurant marks the order ready for the delivery partner to pick up. */
     @Override
     @Transactional
+    @Caching(
+        put = {
+            @CachePut(value = "orders", key = "#orderId")
+        },
+        evict = {
+            @CacheEvict(value = "orders", key = "'user:' + #result.userId"),
+            @CacheEvict(value = "orders", key = "'restaurant:' + #result.restaurantId")
+        }
+    )
     public Order markReadyForPickup(Long orderId) {
         Order order = getById(orderId);
         if (order.getStatus() != Order.Status.PREPARING
@@ -220,6 +289,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @Caching(
+        put = {
+            @CachePut(value = "orders", key = "#orderId")
+        },
+        evict = {
+            @CacheEvict(value = "orders", key = "'user:' + #result.userId"),
+            @CacheEvict(value = "orders", key = "'restaurant:' + #result.restaurantId")
+        }
+    )
     public Order cancel(Long orderId) {
         Order order = getById(orderId);
         if (order.getStatus() == Order.Status.DELIVERED) {
@@ -237,8 +315,14 @@ public class OrderServiceImpl implements OrderService {
     //  Payment                                                             //
     // ------------------------------------------------------------------ //
 
+    /**
+     * NOT cached for the payment mark — payment processing must always go
+     * to the database; a stale payment-status cache would be a security risk.
+     * The per-ID cache is evicted to force a fresh read after marking paid.
+     */
     @Override
     @Transactional
+    @CacheEvict(value = "orders", key = "#orderId")
     public Order markPaid(Long orderId) {
         Order order = getById(orderId);
         orderRepository.updatePaymentStatus(orderId, Order.PaymentStatus.PAID);

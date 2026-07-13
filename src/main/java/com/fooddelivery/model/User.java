@@ -1,5 +1,7 @@
 package com.fooddelivery.model;
 
+import java.io.Serializable;
+
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements Serializable {
 
     public enum Role { CUSTOMER, RESTAURANT_OWNER, DELIVERY_PARTNER, ADMIN }
 

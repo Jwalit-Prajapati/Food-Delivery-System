@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.response;
 
+import java.io.Serializable;
+
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItemResponse {
+public class OrderItemResponse implements Serializable {
     private Long id;
     private Long foodItemId;
     private int quantity;

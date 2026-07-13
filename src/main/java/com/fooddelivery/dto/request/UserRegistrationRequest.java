@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.request;
 
+import java.io.Serializable;
+
 import com.fooddelivery.model.User.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRegistrationRequest {
+public class UserRegistrationRequest implements Serializable {
     
     @NotBlank(message = "Name cannot be empty")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")

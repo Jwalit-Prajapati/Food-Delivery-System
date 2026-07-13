@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.request;
 
+import java.io.Serializable;
+
 import java.time.LocalTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RestaurantCreateRequest {
+public class RestaurantCreateRequest implements Serializable {
     
     @NotBlank(message = "Restaurant name is required")
     @Size(max = 100, message = "Name cannot exceed 100 characters")

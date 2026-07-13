@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.response;
 
+import java.io.Serializable;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CartResponse {
+public class CartResponse implements Serializable {
     private Long id;
     private Long userId;
     private Long restaurantId;

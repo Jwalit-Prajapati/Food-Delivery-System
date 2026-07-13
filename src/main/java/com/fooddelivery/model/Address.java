@@ -1,5 +1,7 @@
 package com.fooddelivery.model;
 
+import java.io.Serializable;
+
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Address {
+public class Address implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

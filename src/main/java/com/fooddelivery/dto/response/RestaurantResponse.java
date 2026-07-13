@@ -1,5 +1,7 @@
 package com.fooddelivery.dto.response;
 
+import java.io.Serializable;
+
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RestaurantResponse {
+public class RestaurantResponse implements Serializable {
     private Long id;
     private String name;
     private String description;

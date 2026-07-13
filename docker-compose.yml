@@ -17,6 +17,19 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7.2
+    container_name: food_delivery_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - food_delivery_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -28,10 +41,14 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/food_delivery_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - DB_USERNAME=root
       - DB_PASSWORD=J1w2a3l4i5t6@
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     networks:
       - food_delivery_network
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 networks:

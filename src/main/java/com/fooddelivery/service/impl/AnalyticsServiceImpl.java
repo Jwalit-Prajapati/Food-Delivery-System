@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.cache.annotation.Cacheable;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     private final OrderRepository orderRepository;
 
     @Override
+    @Cacheable(value = "analytics", key = "'overview'")
     public Map<String, Object> overview() {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("totalUsers",        userRepository.count());

@@ -1,5 +1,7 @@
 package com.fooddelivery.model;
 
+import java.io.Serializable;
+
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItem {
+public class OrderItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

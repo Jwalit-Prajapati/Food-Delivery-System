@@ -1,5 +1,7 @@
 package com.fooddelivery.model;
 
+import java.io.Serializable;
+
 import java.math.BigDecimal;
 
 /**
@@ -12,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Pricing {
+public class Pricing implements Serializable {
 
     private BigDecimal subtotal;
     private BigDecimal tax;
