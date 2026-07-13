@@ -54,8 +54,8 @@ food-delivery-system/
 │   │   ├── web/           # JSP page controllers + SessionUtil
 │   │   └── exception/     # Custom exceptions + @ControllerAdvice
 │   ├── resources/
-│   │   ├── application.properties
-│   │   ├── schema.sql     # MySQL DDL + seed data
+│   │   ├── application.yml    # Spring configuration
+│   │   ├── schema.sql         # Legacy SQL (replaced by JPA + Seeder)
 │   │   └── logback.xml
 │   └── webapp/
 │       ├── WEB-INF/views/      # All JSP files
@@ -93,20 +93,22 @@ food-delivery-system/
 
 ### 1. Create the database
 
-```bash
-mysql -u root -p < src/main/resources/schema.sql
+Create an empty database named `food_delivery_db` in your MySQL server:
+```sql
+CREATE DATABASE food_delivery_db;
 ```
-
-This creates `food_delivery_db` with all tables and a few sample rows.
+*Note: Hibernate will automatically create the tables on startup (`spring.jpa.hibernate.ddl-auto=update`), and `DatabaseSeeder.java` will automatically insert demo data.*
 
 ### 2. Configure DB credentials
 
-Edit `src/main/resources/application.properties`:
+Edit `src/main/resources/application.yml` to set your MySQL username and password, or pass them as environment variables:
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/food_delivery_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/food_delivery_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:YOUR_PASSWORD}
 ```
 
 ### 3. Build and Run
@@ -122,16 +124,23 @@ The app will be available at `http://localhost:8080/`.
 
 ### 4. Demo Accounts
 
-The seed data ships six demo accounts (password is `password` for all):
+The `DatabaseSeeder.java` automatically creates several demo accounts (password is `password` for all, except Admin which is `admin`):
 
 | Email                      | Role               |
 |----------------------------|--------------------|
 | `john@example.com`         | Customer           |
 | `raj@restaurant.com`       | Restaurant owner   |
-| `meera@restaurant.com`     | Restaurant owner   |
-| `priya@delivery.com`       | Delivery partner   |
-| `aakash@delivery.com`      | Delivery partner   |
-| `admin@fooddelivery.com`   | Admin              |
+| `maria@restaurant.com`     | Restaurant owner   |
+| `li@restaurant.com`        | Restaurant owner   |
+| `sophie@restaurant.com`    | Restaurant owner   |
+| `anil@restaurant.com`      | Restaurant owner   |
+| `elena@restaurant.com`     | Restaurant owner   |
+| `kenji@restaurant.com`     | Restaurant owner   |
+| `alex@delivery.com`        | Delivery partner   |
+| `chen@delivery.com`        | Delivery partner   |
+| `admin@example.com`        | Admin              |
+
+Along with these accounts, it seeds dummy addresses, 7 restaurants, and 14 food items.
 
 ## API Reference
 
