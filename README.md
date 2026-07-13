@@ -17,6 +17,7 @@ Built on the **Jakarta EE 10** stack — runs on an embedded Tomcat server or de
 | Mapping & Utils  | MapStruct + Lombok                                  |
 | Database         | MySQL 8.x                                           |
 | API Security     | Spring Security + JWT (JSON Web Tokens)             |
+| Caching          | Redis (Lettuce Client) + Spring Cache               |
 | JSON             | Jackson 2.18                                        |
 | Build Tool       | Maven (war packaging)                               |
 | Java Version     | **22** (or newer)                                   |
@@ -90,6 +91,7 @@ food-delivery-system/
 - **JDK 22 or newer** 
 - **Maven 3.8+**
 - **MySQL 8.x** running locally (or any reachable MySQL host)
+- **Redis 7.x** running locally (or any reachable Redis host)
 - **Docker & Docker Compose** (Optional, for containerized setup)
 
 ### 1. Create the database
@@ -173,6 +175,16 @@ All endpoints return JSON and are available under `/api`.
 - **Cart**: `/api/cart/user/{userId}`
 - **Orders**: `/api/orders/place`, `/api/orders/{id}`
 - **Reviews**: `/api/reviews`
+
+## Redis Caching Architecture
+
+To achieve high performance and low latency, the system utilizes a robust **Redis caching strategy** tailored for read-heavy operations:
+
+- **Entity Caching**: Profiles (`users`), `restaurants`, `foodItems`, and `orders` are cached by ID to eliminate N+1 DB queries during complex screen renders.
+- **List Caching**: Customer-facing menus (`restaurantMenus`), active restaurant listings, and user address books are cached to ensure near-instant loading.
+- **Analytics Cache**: The admin dashboard overview, which aggregates 12 separate database `COUNT`/`SUM` queries, is cached with a short 5-minute TTL.
+- **Smart Eviction**: Advanced `@Caching` annotations guarantee that write operations (`create`, `update`, `delete`, `status transitions`) safely and atomically evict affected lists and caches.
+- **Transaction Aware**: The `RedisCacheManager` is strictly transaction-aware. Cache evictions and puts only finalize if the MySQL transaction commits successfully, preventing stale data on rollback.
 
 ## Design Notes (Recent Refactoring)
 
