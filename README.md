@@ -90,6 +90,7 @@ food-delivery-system/
 - **JDK 22 or newer** 
 - **Maven 3.8+**
 - **MySQL 8.x** running locally (or any reachable MySQL host)
+- **Docker & Docker Compose** (Optional, for containerized setup)
 
 ### 1. Create the database
 
@@ -141,6 +142,24 @@ The `DatabaseSeeder.java` automatically creates several demo accounts (password 
 | `admin@example.com`        | Admin              |
 
 Along with these accounts, it seeds dummy addresses, 7 restaurants, and 14 food items.
+
+### 5. Running with Docker
+
+Alternatively, you can run the entire application stack (MySQL and the Spring Boot App) using Docker Compose without needing to set up anything manually.
+
+1. Build and start the containers:
+```bash
+docker-compose up --build -d
+```
+2. The application will be available at `http://localhost:8080/`. The database is automatically seeded via `DatabaseSeeder.java`.
+3. To view logs:
+```bash
+docker-compose logs -f
+```
+4. To stop the containers:
+```bash
+docker-compose down
+```
 
 ## API Reference
 
